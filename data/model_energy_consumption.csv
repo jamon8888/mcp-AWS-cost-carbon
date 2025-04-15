@@ -1,0 +1,14 @@
+model_id,input_energy_wh,output_energy_wh
+anthropic.claude-3-haiku-20240307-v1:0,0.00025,0.00125
+anthropic.claude-3-sonnet-20240229-v1:0,0.003,0.015
+anthropic.claude-3-opus-20240229-v1:0,0.015,0.075
+amazon.titan-text-express-v1,0.0002,0.0008
+amazon.titan-text-lite-v1,0.0001,0.0002
+meta.llama3-70b-instruct-v1:0,0.0009,0.0009
+mistral.mistral-7b-instruct-v0:2,0.0002,0.0002
+anthropic.claude-instant-v1,0.0002,0.001
+anthropic.claude-v2,0.002,0.01
+cohere.command-text-v14,0.0003,0.0012
+ai21.j2-ultra-v1,0.0004,0.0016
+meta.llama2-70b-chat-v1,0.0008,0.0008
+amazon.titan-embed-text-v1,0.0001,0.0001 

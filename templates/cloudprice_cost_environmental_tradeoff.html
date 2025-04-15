@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost-Environmental Tradeoff | MCP Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li {
+            margin-left: 20px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        nav ul li a.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .filter-group select, .filter-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .filter-actions {
+            display: flex;
+            align-items: flex-end;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .result-section {
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: white;
+        }
+        .full-width-chart {
+            grid-column: 1 / -1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .highlight-row {
+            background-color: #e8f4f8;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .tab.active {
+            border: 1px solid #ddd;
+            border-bottom: 1px solid white;
+            border-top: 3px solid #3498db;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .metric-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .metric-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-card.cost {
+            border-top: 3px solid #e74c3c;
+        }
+        .metric-card.carbon {
+            border-top: 3px solid #2ecc71;
+        }
+        .metric-card.energy {
+            border-top: 3px solid #f39c12;
+        }
+        .metric-card.water {
+            border-top: 3px solid #3498db;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">AWS Cost Explorer MCP</div>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/costs">Cost Analysis</a></li>
+                <li><a href="/environment">Environmental Impact</a></li>
+                <li><a href="/cloudprice" class="active">CloudPrice Analysis</a></li>
+                <li><a href="/reports">Reports</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1>Cost-Environmental Tradeoff Analysis</h1>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="resource-type">Resource Type</label>
+                <select id="resource-type">
+                    <option value="ec2">EC2 Instance</option>
+                    <option value="rds">RDS Database</option>
+                    <option value="lambda">Lambda Functions</option>
+                    <option value="bedrock">Bedrock AI</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="region-select">Region</label>
+                <select id="region-select">
+                    <option value="us-east-1">US East (N. Virginia)</option>
+                    <option value="us-east-2">US East (Ohio)</option>
+                    <option value="us-west-1">US West (N. California)</option>
+                    <option value="us-west-2">US West (Oregon)</option>
+                    <option value="eu-west-1">EU (Ireland)</option>
+                    <option value="eu-central-1">EU (Frankfurt)</option>
+                    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                    <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                </select>
+            </div>
+            
+            <div class="filter-group" id="ec2-filter">
+                <label for="instance-family">Instance Family</label>
+                <select id="instance-family">
+                    <option value="all">All Families</option>
+                    <option value="t3">T3 (Burstable)</option>
+                    <option value="m5">M5 (General Purpose)</option>
+                    <option value="c5">C5 (Compute Optimized)</option>
+                    <option value="r5">R5 (Memory Optimized)</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="pricing-model">Pricing Model</label>
+                <select id="pricing-model">
+                    <option value="on-demand">On-Demand</option>
+                    <option value="reserved-1y">Reserved 1-Year</option>
+                    <option value="reserved-3y">Reserved 3-Year</option>
+                    <option value="spot">Spot</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="priority-select">Analysis Priority</label>
+                <select id="priority-select">
+                    <option value="balanced">Balanced (Cost & Environment)</option>
+                    <option value="cost">Cost Optimized</option>
+                    <option value="carbon">Carbon Optimized</option>
+                    <option value="water">Water Usage Optimized</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button id="apply-filters" class="button">Analyze Tradeoffs</button>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card cost">
+                <h3>Potential Cost Savings</h3>
+                <div class="metric-value" id="cost-savings">$0.00</div>
+                <div>per month</div>
+            </div>
+            
+            <div class="metric-card carbon">
+                <h3>Carbon Reduction</h3>
+                <div class="metric-value" id="carbon-savings">0 kg</div>
+                <div>CO2e per month</div>
+            </div>
+            
+            <div class="metric-card energy">
+                <h3>Energy Savings</h3>
+                <div class="metric-value" id="energy-savings">0 kWh</div>
+                <div>per month</div>
+            </div>
+            
+            <div class="metric-card water">
+                <h3>Water Savings</h3>
+                <div class="metric-value" id="water-savings">0 L</div>
+                <div>per month</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="pareto-analysis">Pareto Analysis</div>
+            <div class="tab" data-tab="tradeoff-matrix">Tradeoff Matrix</div>
+            <div class="tab" data-tab="recommendations">Recommendations</div>
+        </div>
+        
+        <div class="result-section">
+            <div id="pareto-analysis" class="tab-content active">
+                <h2>Pareto Optimal Solutions</h2>
+                <p>These options represent the best balance between cost and environmental impact. Solutions on the Pareto frontier cannot be improved in one dimension without sacrificing the other.</p>
+                
+                <div class="charts-container">
+                    <div class="chart-container full-width-chart" id="pareto-chart">
+                        <p>Loading Pareto analysis chart...</p>
+                    </div>
+                </div>
+                
+                <table id="pareto-table">
+                    <thead>
+                        <tr>
+                            <th>Resource</th>
+                            <th>Description</th>
+                            <th>Cost ($/month)</th>
+                            <th>Carbon (kg CO₂e)</th>
+                            <th>Energy (kWh)</th>
+                            <th>Water Usage (L)</th>
+                            <th>Pareto Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7">Loading Pareto analysis data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="tradeoff-matrix" class="tab-content">
+                <h2>Tradeoff Analysis Matrix</h2>
+                <p>Comparing costs and environmental metrics for different resource options:</p>
+                
+                <div class="charts-container">
+                    <div class="chart-container" id="cost-carbon-chart">
+                        <p>Loading cost vs. carbon chart...</p>
+                    </div>
+                    
+                    <div class="chart-container" id="cost-energy-chart">
+                        <p>Loading cost vs. energy chart...</p>
+                    </div>
+                    
+                    <div class="chart-container" id="cost-water-chart">
+                        <p>Loading cost vs. water usage chart...</p>
+                    </div>
+                    
+                    <div class="chart-container" id="radar-chart">
+                        <p>Loading multi-dimensional comparison chart...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="recommendations" class="tab-content">
+                <h2>Recommended Actions</h2>
+                <p>Based on your priorities, we recommend the following actions:</p>
+                
+                <div id="recommendations-container">
+                    <p>Loading recommendations...</p>
+                </div>
+                
+                <h3>Additional Resource Recommendations</h3>
+                <table id="recommendations-table">
+                    <thead>
+                        <tr>
+                            <th>Current Resource</th>
+                            <th>Recommended Alternative</th>
+                            <th>Cost Impact</th>
+                            <th>Environmental Impact</th>
+                            <th>Migration Complexity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6">Loading recommendation data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>AWS Cost Explorer MCP Server - Powered by CloudPrice.net</p>
+    </footer>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Activate the clicked tab
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Resource type change handler
+        document.getElementById('resource-type').addEventListener('change', function() {
+            const resourceType = this.value;
+            
+            // Show/hide specific filters based on resource type
+            if (resourceType === 'ec2') {
+                document.getElementById('ec2-filter').style.display = 'flex';
+            } else {
+                document.getElementById('ec2-filter').style.display = 'none';
+            }
+            
+            // Would update other filters based on resource type in a real implementation
+        });
+        
+        // Perform analysis when button is clicked
+        document.getElementById('apply-filters').addEventListener('click', function() {
+            const resourceType = document.getElementById('resource-type').value;
+            const region = document.getElementById('region-select').value;
+            const pricingModel = document.getElementById('pricing-model').value;
+            const priority = document.getElementById('priority-select').value;
+            
+            // Set loading state for metrics
+            document.getElementById('cost-savings').textContent = 'Loading...';
+            document.getElementById('carbon-savings').textContent = 'Loading...';
+            document.getElementById('energy-savings').textContent = 'Loading...';
+            document.getElementById('water-savings').textContent = 'Loading...';
+            
+            // Example API call
+            fetch(`/api/cloudprice/tradeoff-analysis?resource=${resourceType}&region=${region}&pricing=${pricingModel}&priority=${priority}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update metrics
+                    document.getElementById('cost-savings').textContent = `$${data.metrics.cost_savings.toFixed(2)}`;
+                    document.getElementById('carbon-savings').textContent = `${data.metrics.carbon_savings.toFixed(2)} kg`;
+                    document.getElementById('energy-savings').textContent = `${data.metrics.energy_savings.toFixed(2)} kWh`;
+                    document.getElementById('water-savings').textContent = `${data.metrics.water_savings.toFixed(2)} L`;
+                    
+                    // Update Pareto chart
+                    if (data.pareto_chart) {
+                        document.getElementById('pareto-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.pareto_chart}" alt="Pareto Analysis Chart">`;
+                    }
+                    
+                    // Update Pareto table
+                    updateParetoTable(data.pareto_data);
+                    
+                    // Update tradeoff charts
+                    if (data.cost_carbon_chart) {
+                        document.getElementById('cost-carbon-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.cost_carbon_chart}" alt="Cost vs Carbon Chart">`;
+                    }
+                    
+                    if (data.cost_energy_chart) {
+                        document.getElementById('cost-energy-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.cost_energy_chart}" alt="Cost vs Energy Chart">`;
+                    }
+                    
+                    if (data.cost_water_chart) {
+                        document.getElementById('cost-water-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.cost_water_chart}" alt="Cost vs Water Usage Chart">`;
+                    }
+                    
+                    if (data.radar_chart) {
+                        document.getElementById('radar-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.radar_chart}" alt="Multi-dimensional Comparison Chart">`;
+                    }
+                    
+                    // Update recommendations
+                    updateRecommendations(data.recommendations);
+                })
+                .catch(error => {
+                    console.error('Error fetching tradeoff analysis data:', error);
+                    document.getElementById('cost-savings').textContent = 'Error';
+                    document.getElementById('carbon-savings').textContent = 'Error';
+                    document.getElementById('energy-savings').textContent = 'Error';
+                    document.getElementById('water-savings').textContent = 'Error';
+                });
+        });
+        
+        // Update Pareto table with data
+        function updateParetoTable(paretoData) {
+            const tableBody = document.querySelector('#pareto-table tbody');
+            let tableHtml = '';
+            
+            if (paretoData && paretoData.length > 0) {
+                for (const item of paretoData) {
+                    const rowClass = item.pareto_rank === 1 ? 'highlight-row' : '';
+                    
+                    tableHtml += `<tr class="${rowClass}">
+                        <td>${item.resource}</td>
+                        <td>${item.description}</td>
+                        <td>$${item.cost.toFixed(2)}</td>
+                        <td>${item.carbon.toFixed(2)}</td>
+                        <td>${item.energy.toFixed(2)}</td>
+                        <td>${item.water.toFixed(2)}</td>
+                        <td>${item.pareto_rank}</td>
+                    </tr>`;
+                }
+            } else {
+                tableHtml = '<tr><td colspan="7">No Pareto analysis data available</td></tr>';
+            }
+            
+            tableBody.innerHTML = tableHtml;
+        }
+        
+        // Update recommendations with data
+        function updateRecommendations(recommendations) {
+            const container = document.getElementById('recommendations-container');
+            const tableBody = document.querySelector('#recommendations-table tbody');
+            
+            // Update text recommendations
+            if (recommendations && recommendations.summary) {
+                container.innerHTML = `<div>${recommendations.summary}</div>`;
+            } else {
+                container.innerHTML = '<p>No recommendations available.</p>';
+            }
+            
+            // Update recommendation table
+            let tableHtml = '';
+            
+            if (recommendations && recommendations.items && recommendations.items.length > 0) {
+                for (const item of recommendations.items) {
+                    const costClass = item.cost_impact.startsWith('+') ? 'text-danger' : 'text-success';
+                    const envClass = item.environmental_impact.includes('Better') ? 'text-success' : 
+                                     item.environmental_impact.includes('Similar') ? '' : 'text-danger';
+                    
+                    tableHtml += `<tr>
+                        <td>${item.current_resource}</td>
+                        <td>${item.recommended_alternative}</td>
+                        <td class="${costClass}">${item.cost_impact}</td>
+                        <td class="${envClass}">${item.environmental_impact}</td>
+                        <td>${item.migration_complexity}</td>
+                        <td><button class="button">Apply</button></td>
+                    </tr>`;
+                }
+            } else {
+                tableHtml = '<tr><td colspan="6">No specific recommendations available</td></tr>';
+            }
+            
+            tableBody.innerHTML = tableHtml;
+        }
+        
+        // Initial load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Trigger initial resource type change to set up proper UI
+            const resourceTypeSelect = document.getElementById('resource-type');
+            const event = new Event('change');
+            resourceTypeSelect.dispatchEvent(event);
+        });
+    </script>
+</body>
+</html> 

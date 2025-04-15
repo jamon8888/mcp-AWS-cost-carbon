@@ -1,0 +1,22 @@
+region,water_stress_level
+us-east-1,Medium
+us-east-2,Medium
+us-west-1,High
+us-west-2,Medium
+eu-west-1,Low
+eu-central-1,Medium
+eu-north-1,Low
+ap-northeast-1,Medium
+ap-southeast-1,High
+ap-south-1,Very High
+sa-east-1,Medium
+af-south-1,High
+me-south-1,Very High
+ap-east-1,High
+eu-south-1,Medium
+eu-west-2,Low
+eu-west-3,Low
+ap-northeast-2,Medium
+ap-southeast-2,High
+ca-central-1,Low
+us-gov-west-1,Medium 

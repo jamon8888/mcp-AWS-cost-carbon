@@ -1,0 +1,3 @@
+model_id,input_kwh_per_million_tokens,output_kwh_per_million_tokens
+claude-3-opus,0.06,0.18
+gpt-4-turbo,0.05,0.15

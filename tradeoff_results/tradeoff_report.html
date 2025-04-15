@@ -1,0 +1,716 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>EC2 Cost-Environmental Trade-off Analysis</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                h1, h2, h3 { color: #0066cc; }
+                .chart { margin: 20px 0; max-width: 100%; }
+                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                tr:nth-child(even) { background-color: #f9f9f9; }
+                .recommendation { 
+                    background-color: #f0f7ff; 
+                    border-left: 4px solid #0066cc; 
+                    padding: 15px;
+                    margin: 20px 0;
+                }
+                .eco { border-left-color: #2e8b57; }
+                .cost { border-left-color: #ff7f50; }
+                .balanced { border-left-color: #9370db; }
+            </style>
+        </head>
+        <body>
+            <h1>EC2 Cost-Environmental Trade-off Analysis</h1>
+            <p>Analysis Date: 2025-04-15 11:55:42</p>
+            
+            <h2>Overview</h2>
+            <p>This report analyzes the trade-off between cost and environmental impact for various EC2 instance types across different AWS regions.</p>
+            
+            <h2>Key Findings</h2>
+            <ul>
+                <li>Total instances analyzed: 55</li>
+                <li>Regions analyzed: us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2</li>
+                <li>Pareto-optimal options found: 5</li>
+            </ul>
+            
+            <h2>Recommendations</h2>
+        
+            <div class="recommendation eco">
+                <h3>Most Eco-Friendly Option</h3>
+                <p><strong>Instance:</strong> t3.micro in us-west-2</p>
+                <p><strong>Carbon Footprint:</strong> 1.76 kg</p>
+                <p><strong>Monthly Cost:</strong> $7.59</p>
+            </div>
+            
+            <div class="recommendation cost">
+                <h3>Most Cost-Effective Option</h3>
+                <p><strong>Instance:</strong> t3.micro in us-east-1</p>
+                <p><strong>Carbon Footprint:</strong> 4.98 kg</p>
+                <p><strong>Monthly Cost:</strong> $7.59</p>
+            </div>
+            
+            <div class="recommendation balanced">
+                <h3>Best Balanced Option</h3>
+                <p><strong>Instance:</strong> t3.micro in us-west-2</p>
+                <p><strong>Carbon Footprint:</strong> 1.76 kg</p>
+                <p><strong>Monthly Cost:</strong> $7.59</p>
+            </div>
+            
+            <h2>Cost vs. Carbon Trade-off</h2>
+            <img class="chart" src="tradeoff_chart_all_regions.png" alt="Cost vs. Carbon Trade-off Chart">
+            <p>This chart shows the relationship between monthly cost and carbon footprint for different EC2 instances across regions.</p>
+            
+            <h2>Carbon Efficiency</h2>
+            <img class="chart" src="efficiency_chart.png" alt="Carbon Efficiency Chart">
+            <p>This chart shows the carbon efficiency (kg CO₂e per USD spent) for different EC2 instances.</p>
+            
+            <h2>Region-Specific Analysis</h2>
+            
+                <h3>us-east-1</h3>
+                <img class="chart" src="tradeoff_chart_us-east-1.png" alt="Trade-off Chart for us-east-1">
+                
+                <h3>us-west-2</h3>
+                <img class="chart" src="tradeoff_chart_us-west-2.png" alt="Trade-off Chart for us-west-2">
+                
+                <h3>eu-west-1</h3>
+                <img class="chart" src="tradeoff_chart_eu-west-1.png" alt="Trade-off Chart for eu-west-1">
+                
+                <h3>eu-central-1</h3>
+                <img class="chart" src="tradeoff_chart_eu-central-1.png" alt="Trade-off Chart for eu-central-1">
+                
+                <h3>ap-southeast-2</h3>
+                <img class="chart" src="tradeoff_chart_ap-southeast-2.png" alt="Trade-off Chart for ap-southeast-2">
+                
+            <h2>Pareto-Optimal Instances</h2>
+            <p>These instances represent optimal choices where no other option has both lower cost and lower carbon footprint.</p>
+            <table>
+                <tr>
+                    <th>Instance Type</th>
+                    <th>Region</th>
+                    <th>Monthly Cost ($)</th>
+                    <th>Carbon Footprint (kg)</th>
+                    <th>Energy (kWh)</th>
+                    <th>Water (L)</th>
+                </tr>
+            
+                <tr>
+                    <td>t3.micro</td>
+                    <td>us-east-1</td>
+                    <td>$7.59</td>
+                    <td>4.98</td>
+                    <td>10.95</td>
+                    <td>23.65</td>
+                </tr>
+                
+                <tr>
+                    <td>t3.micro</td>
+                    <td>us-west-2</td>
+                    <td>$7.59</td>
+                    <td>1.76</td>
+                    <td>10.95</td>
+                    <td>21.97</td>
+                </tr>
+                
+                <tr>
+                    <td>t3.micro</td>
+                    <td>eu-west-1</td>
+                    <td>$7.59</td>
+                    <td>3.98</td>
+                    <td>10.95</td>
+                    <td>18.89</td>
+                </tr>
+                
+                <tr>
+                    <td>t3.micro</td>
+                    <td>eu-central-1</td>
+                    <td>$7.59</td>
+                    <td>4.09</td>
+                    <td>10.95</td>
+                    <td>21.02</td>
+                </tr>
+                
+                <tr>
+                    <td>t3.micro</td>
+                    <td>ap-southeast-2</td>
+                    <td>$7.59</td>
+                    <td>10.64</td>
+                    <td>10.95</td>
+                    <td>28.28</td>
+                </tr>
+                </table>
+        <h2>All Results</h2>
+        <table>
+            <tr>
+                <th>Instance Type</th>
+                <th>Region</th>
+                <th>Monthly Cost ($)</th>
+                <th>Carbon Footprint (kg)</th>
+                <th>Energy (kWh)</th>
+                <th>Water (L)</th>
+                <th>kg CO₂e per $</th>
+            </tr>
+        
+            <tr>
+                <td>t3.micro</td>
+                <td>ap-southeast-2</td>
+                <td>$7.59</td>
+                <td>10.64</td>
+                <td>10.95</td>
+                <td>28.28</td>
+                <td>1.40</td>
+            </tr>
+            
+            <tr>
+                <td>t3.small</td>
+                <td>ap-southeast-2</td>
+                <td>$15.18</td>
+                <td>21.28</td>
+                <td>21.90</td>
+                <td>56.57</td>
+                <td>1.40</td>
+            </tr>
+            
+            <tr>
+                <td>t3.medium</td>
+                <td>ap-southeast-2</td>
+                <td>$30.37</td>
+                <td>42.56</td>
+                <td>43.80</td>
+                <td>113.14</td>
+                <td>1.40</td>
+            </tr>
+            
+            <tr>
+                <td>t3.large</td>
+                <td>ap-southeast-2</td>
+                <td>$60.74</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.58</td>
+            </tr>
+            
+            <tr>
+                <td>c5.large</td>
+                <td>ap-southeast-2</td>
+                <td>$62.05</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.57</td>
+            </tr>
+            
+            <tr>
+                <td>m5.large</td>
+                <td>ap-southeast-2</td>
+                <td>$70.08</td>
+                <td>53.20</td>
+                <td>54.75</td>
+                <td>141.42</td>
+                <td>0.76</td>
+            </tr>
+            
+            <tr>
+                <td>r5.large</td>
+                <td>ap-southeast-2</td>
+                <td>$91.98</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.39</td>
+            </tr>
+            
+            <tr>
+                <td>t3.xlarge</td>
+                <td>ap-southeast-2</td>
+                <td>$121.47</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.29</td>
+            </tr>
+            
+            <tr>
+                <td>c5.xlarge</td>
+                <td>ap-southeast-2</td>
+                <td>$124.10</td>
+                <td>67.39</td>
+                <td>69.35</td>
+                <td>179.13</td>
+                <td>0.54</td>
+            </tr>
+            
+            <tr>
+                <td>m5.xlarge</td>
+                <td>ap-southeast-2</td>
+                <td>$140.16</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.25</td>
+            </tr>
+            
+            <tr>
+                <td>r5.xlarge</td>
+                <td>ap-southeast-2</td>
+                <td>$183.96</td>
+                <td>35.47</td>
+                <td>36.50</td>
+                <td>94.28</td>
+                <td>0.19</td>
+            </tr>
+            
+            <tr>
+                <td>t3.micro</td>
+                <td>eu-central-1</td>
+                <td>$7.59</td>
+                <td>4.09</td>
+                <td>10.95</td>
+                <td>21.02</td>
+                <td>0.54</td>
+            </tr>
+            
+            <tr>
+                <td>t3.small</td>
+                <td>eu-central-1</td>
+                <td>$15.18</td>
+                <td>8.17</td>
+                <td>21.90</td>
+                <td>42.05</td>
+                <td>0.54</td>
+            </tr>
+            
+            <tr>
+                <td>t3.medium</td>
+                <td>eu-central-1</td>
+                <td>$30.37</td>
+                <td>16.35</td>
+                <td>43.80</td>
+                <td>84.10</td>
+                <td>0.54</td>
+            </tr>
+            
+            <tr>
+                <td>t3.large</td>
+                <td>eu-central-1</td>
+                <td>$60.74</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.22</td>
+            </tr>
+            
+            <tr>
+                <td>c5.large</td>
+                <td>eu-central-1</td>
+                <td>$62.05</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.22</td>
+            </tr>
+            
+            <tr>
+                <td>m5.large</td>
+                <td>eu-central-1</td>
+                <td>$70.08</td>
+                <td>20.43</td>
+                <td>54.75</td>
+                <td>105.12</td>
+                <td>0.29</td>
+            </tr>
+            
+            <tr>
+                <td>r5.large</td>
+                <td>eu-central-1</td>
+                <td>$91.98</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.15</td>
+            </tr>
+            
+            <tr>
+                <td>t3.xlarge</td>
+                <td>eu-central-1</td>
+                <td>$121.47</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.11</td>
+            </tr>
+            
+            <tr>
+                <td>c5.xlarge</td>
+                <td>eu-central-1</td>
+                <td>$124.10</td>
+                <td>25.88</td>
+                <td>69.35</td>
+                <td>133.15</td>
+                <td>0.21</td>
+            </tr>
+            
+            <tr>
+                <td>m5.xlarge</td>
+                <td>eu-central-1</td>
+                <td>$140.16</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.10</td>
+            </tr>
+            
+            <tr>
+                <td>r5.xlarge</td>
+                <td>eu-central-1</td>
+                <td>$183.96</td>
+                <td>13.62</td>
+                <td>36.50</td>
+                <td>70.08</td>
+                <td>0.07</td>
+            </tr>
+            
+            <tr>
+                <td>t3.micro</td>
+                <td>eu-west-1</td>
+                <td>$7.59</td>
+                <td>3.98</td>
+                <td>10.95</td>
+                <td>18.89</td>
+                <td>0.52</td>
+            </tr>
+            
+            <tr>
+                <td>t3.small</td>
+                <td>eu-west-1</td>
+                <td>$15.18</td>
+                <td>7.96</td>
+                <td>21.90</td>
+                <td>37.78</td>
+                <td>0.52</td>
+            </tr>
+            
+            <tr>
+                <td>t3.medium</td>
+                <td>eu-west-1</td>
+                <td>$30.37</td>
+                <td>15.92</td>
+                <td>43.80</td>
+                <td>75.55</td>
+                <td>0.52</td>
+            </tr>
+            
+            <tr>
+                <td>t3.large</td>
+                <td>eu-west-1</td>
+                <td>$60.74</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.22</td>
+            </tr>
+            
+            <tr>
+                <td>c5.large</td>
+                <td>eu-west-1</td>
+                <td>$62.05</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.21</td>
+            </tr>
+            
+            <tr>
+                <td>m5.large</td>
+                <td>eu-west-1</td>
+                <td>$70.08</td>
+                <td>19.90</td>
+                <td>54.75</td>
+                <td>94.44</td>
+                <td>0.28</td>
+            </tr>
+            
+            <tr>
+                <td>r5.large</td>
+                <td>eu-west-1</td>
+                <td>$91.98</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.14</td>
+            </tr>
+            
+            <tr>
+                <td>t3.xlarge</td>
+                <td>eu-west-1</td>
+                <td>$121.47</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.11</td>
+            </tr>
+            
+            <tr>
+                <td>c5.xlarge</td>
+                <td>eu-west-1</td>
+                <td>$124.10</td>
+                <td>25.20</td>
+                <td>69.35</td>
+                <td>119.63</td>
+                <td>0.20</td>
+            </tr>
+            
+            <tr>
+                <td>m5.xlarge</td>
+                <td>eu-west-1</td>
+                <td>$140.16</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.09</td>
+            </tr>
+            
+            <tr>
+                <td>r5.xlarge</td>
+                <td>eu-west-1</td>
+                <td>$183.96</td>
+                <td>13.26</td>
+                <td>36.50</td>
+                <td>62.96</td>
+                <td>0.07</td>
+            </tr>
+            
+            <tr>
+                <td>t3.micro</td>
+                <td>us-east-1</td>
+                <td>$7.59</td>
+                <td>4.98</td>
+                <td>10.95</td>
+                <td>23.65</td>
+                <td>0.66</td>
+            </tr>
+            
+            <tr>
+                <td>t3.small</td>
+                <td>us-east-1</td>
+                <td>$15.18</td>
+                <td>9.96</td>
+                <td>21.90</td>
+                <td>47.30</td>
+                <td>0.66</td>
+            </tr>
+            
+            <tr>
+                <td>t3.medium</td>
+                <td>us-east-1</td>
+                <td>$30.37</td>
+                <td>19.93</td>
+                <td>43.80</td>
+                <td>94.61</td>
+                <td>0.66</td>
+            </tr>
+            
+            <tr>
+                <td>t3.large</td>
+                <td>us-east-1</td>
+                <td>$60.74</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.27</td>
+            </tr>
+            
+            <tr>
+                <td>c5.large</td>
+                <td>us-east-1</td>
+                <td>$62.05</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.27</td>
+            </tr>
+            
+            <tr>
+                <td>m5.large</td>
+                <td>us-east-1</td>
+                <td>$70.08</td>
+                <td>24.91</td>
+                <td>54.75</td>
+                <td>118.26</td>
+                <td>0.36</td>
+            </tr>
+            
+            <tr>
+                <td>r5.large</td>
+                <td>us-east-1</td>
+                <td>$91.98</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.18</td>
+            </tr>
+            
+            <tr>
+                <td>t3.xlarge</td>
+                <td>us-east-1</td>
+                <td>$121.47</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.14</td>
+            </tr>
+            
+            <tr>
+                <td>c5.xlarge</td>
+                <td>us-east-1</td>
+                <td>$124.10</td>
+                <td>31.55</td>
+                <td>69.35</td>
+                <td>149.80</td>
+                <td>0.25</td>
+            </tr>
+            
+            <tr>
+                <td>m5.xlarge</td>
+                <td>us-east-1</td>
+                <td>$140.16</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.12</td>
+            </tr>
+            
+            <tr>
+                <td>r5.xlarge</td>
+                <td>us-east-1</td>
+                <td>$183.96</td>
+                <td>16.60</td>
+                <td>36.50</td>
+                <td>78.84</td>
+                <td>0.09</td>
+            </tr>
+            
+            <tr>
+                <td>t3.micro</td>
+                <td>us-west-2</td>
+                <td>$7.59</td>
+                <td>1.76</td>
+                <td>10.95</td>
+                <td>21.97</td>
+                <td>0.23</td>
+            </tr>
+            
+            <tr>
+                <td>t3.small</td>
+                <td>us-west-2</td>
+                <td>$15.18</td>
+                <td>3.52</td>
+                <td>21.90</td>
+                <td>43.93</td>
+                <td>0.23</td>
+            </tr>
+            
+            <tr>
+                <td>t3.medium</td>
+                <td>us-west-2</td>
+                <td>$30.37</td>
+                <td>7.04</td>
+                <td>43.80</td>
+                <td>87.86</td>
+                <td>0.23</td>
+            </tr>
+            
+            <tr>
+                <td>t3.large</td>
+                <td>us-west-2</td>
+                <td>$60.74</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.10</td>
+            </tr>
+            
+            <tr>
+                <td>c5.large</td>
+                <td>us-west-2</td>
+                <td>$62.05</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.09</td>
+            </tr>
+            
+            <tr>
+                <td>m5.large</td>
+                <td>us-west-2</td>
+                <td>$70.08</td>
+                <td>8.81</td>
+                <td>54.75</td>
+                <td>109.83</td>
+                <td>0.13</td>
+            </tr>
+            
+            <tr>
+                <td>r5.large</td>
+                <td>us-west-2</td>
+                <td>$91.98</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.06</td>
+            </tr>
+            
+            <tr>
+                <td>t3.xlarge</td>
+                <td>us-west-2</td>
+                <td>$121.47</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.05</td>
+            </tr>
+            
+            <tr>
+                <td>c5.xlarge</td>
+                <td>us-west-2</td>
+                <td>$124.10</td>
+                <td>11.15</td>
+                <td>69.35</td>
+                <td>139.12</td>
+                <td>0.09</td>
+            </tr>
+            
+            <tr>
+                <td>m5.xlarge</td>
+                <td>us-west-2</td>
+                <td>$140.16</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.04</td>
+            </tr>
+            
+            <tr>
+                <td>r5.xlarge</td>
+                <td>us-west-2</td>
+                <td>$183.96</td>
+                <td>5.87</td>
+                <td>36.50</td>
+                <td>73.22</td>
+                <td>0.03</td>
+            </tr>
+            
+            </table>
+            <h2>Methodology</h2>
+            <p>This analysis combines pricing data with environmental impact metrics calculated using the Scope3 methodology, which accounts for carbon emissions, energy usage, and water consumption of AWS services.</p>
+            <p>Pareto-optimal instances are those where no other instance can provide both better cost and better environmental performance simultaneously.</p>
+            
+            <footer style="margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px; font-size: 0.8em;">
+                <p>Generated by AWS Cost Explorer MCP Server - Cost-Environmental Trade-off Analyzer</p>
+            </footer>
+        </body>
+        </html>
+        

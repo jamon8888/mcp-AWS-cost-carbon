@@ -1,0 +1,3 @@
+model_id,total_emissions_gco2e,expected_inferences
+claude-3-opus,50000000,1000000000000.0
+gpt-4-turbo,78000000,1500000000000.0

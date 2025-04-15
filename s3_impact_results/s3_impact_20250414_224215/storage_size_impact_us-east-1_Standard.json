@@ -1,0 +1,47 @@
+[
+  {
+    "storage_gb": 100,
+    "region": "us-east-1",
+    "storage_class": "Standard",
+    "carbon_footprint_grams": 0.045492000000000005,
+    "energy_kwh": 0.1,
+    "water_usage_liters": 0.216,
+    "water_stress_level": "Medium"
+  },
+  {
+    "storage_gb": 500,
+    "region": "us-east-1",
+    "storage_class": "Standard",
+    "carbon_footprint_grams": 0.22746,
+    "energy_kwh": 0.5,
+    "water_usage_liters": 1.08,
+    "water_stress_level": "Medium"
+  },
+  {
+    "storage_gb": 1000,
+    "region": "us-east-1",
+    "storage_class": "Standard",
+    "carbon_footprint_grams": 0.45492,
+    "energy_kwh": 1.0,
+    "water_usage_liters": 2.16,
+    "water_stress_level": "Medium"
+  },
+  {
+    "storage_gb": 5000,
+    "region": "us-east-1",
+    "storage_class": "Standard",
+    "carbon_footprint_grams": 2.2746000000000004,
+    "energy_kwh": 5.0,
+    "water_usage_liters": 10.8,
+    "water_stress_level": "Medium"
+  },
+  {
+    "storage_gb": 10000,
+    "region": "us-east-1",
+    "storage_class": "Standard",
+    "carbon_footprint_grams": 4.549200000000001,
+    "energy_kwh": 10.0,
+    "water_usage_liters": 21.6,
+    "water_stress_level": "Medium"
+  }
+]

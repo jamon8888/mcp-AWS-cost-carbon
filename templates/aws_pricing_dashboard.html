@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Pricing & Efficiency Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            font-weight: bold;
+        }
+        .efficiency-metric {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .region-badge {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .instance-badge {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">AWS Pricing & Efficiency Dashboard</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Instance Pricing Analysis</div>
+                    <div class="card-body">
+                        <form id="pricingForm">
+                            <div class="mb-3">
+                                <label for="instanceType" class="form-label">Instance Type</label>
+                                <input type="text" class="form-control" id="instanceType" value="t3.micro">
+                            </div>
+                            <div class="mb-3">
+                                <label for="region" class="form-label">Region</label>
+                                <select class="form-select" id="region">
+                                    <option value="us-east-1">US East (N. Virginia)</option>
+                                    <option value="us-east-2">US East (Ohio)</option>
+                                    <option value="us-west-1">US West (N. California)</option>
+                                    <option value="us-west-2">US West (Oregon)</option>
+                                    <option value="eu-west-1">EU (Ireland)</option>
+                                    <option value="eu-central-1">EU (Frankfurt)</option>
+                                    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                                    <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                                    <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Analyze</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Compare Instance Types</div>
+                    <div class="card-body">
+                        <form id="compareForm">
+                            <div class="mb-3">
+                                <label for="instanceTypes" class="form-label">Instance Types (comma-separated)</label>
+                                <input type="text" class="form-control" id="instanceTypes" value="t3.micro,t3.small,t3.medium">
+                            </div>
+                            <div class="mb-3">
+                                <label for="compareRegion" class="form-label">Region</label>
+                                <select class="form-select" id="compareRegion">
+                                    <option value="us-east-1">US East (N. Virginia)</option>
+                                    <option value="us-east-2">US East (Ohio)</option>
+                                    <option value="us-west-1">US West (N. California)</option>
+                                    <option value="us-west-2">US West (Oregon)</option>
+                                    <option value="eu-west-1">EU (Ireland)</option>
+                                    <option value="eu-central-1">EU (Frankfurt)</option>
+                                    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                                    <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                                    <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Compare</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Region Analysis</div>
+                    <div class="card-body">
+                        <form id="regionForm">
+                            <div class="mb-3">
+                                <label for="regionInstanceType" class="form-label">Instance Type</label>
+                                <input type="text" class="form-control" id="regionInstanceType" value="t3.micro">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Regions to Compare</label>
+                                <div id="regionSelector">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="us-east-1" id="region-us-east-1" checked>
+                                        <label class="form-check-label" for="region-us-east-1">US East (N. Virginia)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="us-west-2" id="region-us-west-2" checked>
+                                        <label class="form-check-label" for="region-us-west-2">US West (Oregon)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="eu-west-1" id="region-eu-west-1" checked>
+                                        <label class="form-check-label" for="region-eu-west-1">EU (Ireland)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" value="ap-northeast-1" id="region-ap-northeast-1" checked>
+                                        <label class="form-check-label" for="region-ap-northeast-1">Asia Pacific (Tokyo)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Analyze Regions</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">Quick Recommendations</div>
+                    <div class="card-body">
+                        <p>Based on your analysis, here are some recommendations:</p>
+                        <div id="recommendations">
+                            <p>Run an analysis to get recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">Analysis Results</div>
+                    <div class="card-body">
+                        <div id="resultsContainer">
+                            <p>Run an analysis to see results.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        // Analyze a single instance type
+        document.getElementById('pricingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            showLoading();
+            
+            const instanceType = document.getElementById('instanceType').value;
+            const region = document.getElementById('region').value;
+            
+            try {
+                const response = await fetch(`/api/pricing/ec2?instance_type=${instanceType}&region=${region}`);
+                const data = await response.json();
+                
+                // Display results
+                displaySingleInstanceResults(data);
+                updateRecommendations(`For ${instanceType} in ${region}, you're paying approximately $${(data.pricing.on_demand_price * 730).toFixed(2)} per month. The carbon footprint is approximately ${data.carbon.emissions_kg_per_month.toFixed(2)} kg CO2 per month.`);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultsContainer').innerHTML = `<div class="alert alert-danger">Error loading data: ${error.message}</div>`;
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Compare multiple instance types
+        document.getElementById('compareForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            showLoading();
+            
+            const instanceTypes = document.getElementById('instanceTypes').value;
+            const region = document.getElementById('compareRegion').value;
+            
+            try {
+                const response = await fetch(`/api/pricing/ec2/compare?instance_types=${instanceTypes}&region=${region}`);
+                const data = await response.json();
+                
+                // Display results
+                displayComparisonResults(data);
+                
+                // Update recommendations
+                if (data.best_instances && data.best_instances.cost_efficiency) {
+                    updateRecommendations(`For best cost efficiency, use ${data.best_instances.cost_efficiency}. For best carbon efficiency, use ${data.best_instances.carbon_efficiency}. For the best balance of cost and carbon, use ${data.best_instances.cost_carbon_balance}.`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultsContainer').innerHTML = `<div class="alert alert-danger">Error loading data: ${error.message}</div>`;
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Compare regions
+        document.getElementById('regionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            showLoading();
+            
+            const instanceType = document.getElementById('regionInstanceType').value;
+            
+            // Get selected regions
+            const checkboxes = document.querySelectorAll('#regionSelector input:checked');
+            const regions = Array.from(checkboxes).map(cb => cb.value).join(',');
+            
+            try {
+                const response = await fetch(`/api/pricing/ec2/cheapest-region?instance_type=${instanceType}&regions=${regions}`);
+                const data = await response.json();
+                
+                // Display results
+                displayRegionResults(data);
+                
+                // Update recommendations
+                if (data.best_regions) {
+                    updateRecommendations(`For ${instanceType}, the cheapest region is ${data.best_regions.lowest_cost}, and the most environmentally friendly region is ${data.best_regions.lowest_carbon}. The best balance for cost and carbon is ${data.best_regions.best_cost_carbon_balance}.`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultsContainer').innerHTML = `<div class="alert alert-danger">Error loading data: ${error.message}</div>`;
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Display results for a single instance
+        function displaySingleInstanceResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            let html = `
+                <h3>${data.instance_type} in ${data.region}</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">Pricing</div>
+                            <div class="card-body">
+                                <p><strong>On-Demand Hourly:</strong> $${data.pricing.on_demand_price}</p>
+                                <p><strong>Monthly Estimated:</strong> $${data.pricing.prices.monthly.toFixed(2)}</p>
+                                <p><strong>vCPUs:</strong> ${data.pricing.vcpus}</p>
+                                <p><strong>Memory:</strong> ${data.pricing.memory_gb}</p>
+                                <p><strong>Generation:</strong> ${data.pricing.generation}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">Carbon Footprint</div>
+                            <div class="card-body">
+                                <p><strong>Emissions per Hour:</strong> ${data.carbon.emissions_g_per_hour.toFixed(2)} g CO2</p>
+                                <p><strong>Emissions per Month:</strong> ${data.carbon.emissions_kg_per_month.toFixed(2)} kg CO2</p>
+                                <p><strong>Water per Hour:</strong> ${data.water.water_liters_per_hour.toFixed(4)} L</p>
+                                <p><strong>Water per Month:</strong> ${data.water.water_liters_per_month.toFixed(2)} L</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">Efficiency Metrics</div>
+                            <div class="card-body">
+                                <p><strong>vCPUs per Dollar:</strong> ${data.efficiency.vcpus_per_dollar?.toFixed(2) || 'N/A'}</p>
+                                <p><strong>vCPUs per Carbon g:</strong> ${data.efficiency.vcpus_per_carbon_g?.toFixed(4) || 'N/A'}</p>
+                                <p><strong>Cost-Carbon Balance:</strong> ${data.efficiency.cost_carbon_efficiency?.toFixed(4) || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        // Display results for instance comparison
+        function displayComparisonResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            let html = `
+                <h3>Instance Comparison in ${data.region}</h3>
+                <div class="mb-4">
+                    <h4>Best Instances:</h4>
+                    <p><strong>Best Cost Efficiency:</strong> ${data.best_instances.cost_efficiency}</p>
+                    <p><strong>Best Carbon Efficiency:</strong> ${data.best_instances.carbon_efficiency}</p>
+                    <p><strong>Best Cost-Carbon Balance:</strong> ${data.best_instances.cost_carbon_balance}</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Instance Type</th>
+                                <th>On-Demand Hourly</th>
+                                <th>Monthly Cost</th>
+                                <th>vCPUs</th>
+                                <th>Memory</th>
+                                <th>Carbon (g/hr)</th>
+                                <th>Water (L/hr)</th>
+                                <th>vCPUs/Dollar</th>
+                                <th>vCPUs/Carbon g</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            for (const [instanceType, instanceData] of Object.entries(data.instances)) {
+                html += `
+                    <tr>
+                        <td>${instanceType}</td>
+                        <td>$${instanceData.pricing.on_demand_price}</td>
+                        <td>$${instanceData.pricing.prices.monthly?.toFixed(2) || 'N/A'}</td>
+                        <td>${instanceData.pricing.vcpus}</td>
+                        <td>${instanceData.pricing.memory_gb}</td>
+                        <td>${instanceData.carbon.emissions_g_per_hour?.toFixed(2) || 'N/A'}</td>
+                        <td>${instanceData.water.water_liters_per_hour?.toFixed(4) || 'N/A'}</td>
+                        <td>${instanceData.efficiency.vcpus_per_dollar?.toFixed(2) || 'N/A'}</td>
+                        <td>${instanceData.efficiency.vcpus_per_carbon_g?.toFixed(4) || 'N/A'}</td>
+                    </tr>
+                `;
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        // Display results for region comparison
+        function displayRegionResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            let html = `
+                <h3>Region Comparison for ${data.instance_type}</h3>
+                <div class="mb-4">
+                    <h4>Best Regions:</h4>
+                    <p><strong>Lowest Cost:</strong> ${data.best_regions.lowest_cost}</p>
+                    <p><strong>Lowest Carbon:</strong> ${data.best_regions.lowest_carbon}</p>
+                    <p><strong>Lowest Water Usage:</strong> ${data.best_regions.lowest_water}</p>
+                    <p><strong>Best Cost-Carbon Balance:</strong> ${data.best_regions.best_cost_carbon_balance}</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>On-Demand Hourly</th>
+                                <th>Monthly Cost</th>
+                                <th>Carbon (g/hr)</th>
+                                <th>Water (L/hr)</th>
+                                <th>vCPUs/Dollar</th>
+                                <th>vCPUs/Carbon g</th>
+                                <th>Cost-Carbon Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            for (const [region, regionData] of Object.entries(data.regions)) {
+                html += `
+                    <tr>
+                        <td>${region}</td>
+                        <td>$${regionData.pricing.on_demand_price}</td>
+                        <td>$${regionData.pricing.prices.monthly?.toFixed(2) || 'N/A'}</td>
+                        <td>${regionData.carbon.emissions_g_per_hour?.toFixed(2) || 'N/A'}</td>
+                        <td>${regionData.water.water_liters_per_hour?.toFixed(4) || 'N/A'}</td>
+                        <td>${regionData.efficiency.vcpus_per_dollar?.toFixed(2) || 'N/A'}</td>
+                        <td>${regionData.efficiency.vcpus_per_carbon_g?.toFixed(4) || 'N/A'}</td>
+                        <td>${regionData.efficiency.cost_carbon_efficiency?.toFixed(4) || 'N/A'}</td>
+                    </tr>
+                `;
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = html;
+        }
+        
+        // Update recommendations
+        function updateRecommendations(text) {
+            document.getElementById('recommendations').innerHTML = `<p>${text}</p>`;
+        }
+    </script>
+</body>
+</html> 

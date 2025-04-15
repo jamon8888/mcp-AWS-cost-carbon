@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS Price Analysis | MCP Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li {
+            margin-left: 20px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        nav ul li a.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .filter-group select, .filter-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .filter-actions {
+            display: flex;
+            align-items: flex-end;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .result-section {
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .price-highlight {
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .tab.active {
+            border: 1px solid #ddd;
+            border-bottom: 1px solid white;
+            border-top: 3px solid #3498db;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">AWS Cost Explorer MCP</div>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/costs">Cost Analysis</a></li>
+                <li><a href="/environment">Environmental Impact</a></li>
+                <li><a href="/cloudprice" class="active">CloudPrice Analysis</a></li>
+                <li><a href="/reports">Reports</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1>RDS Price Analysis</h1>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="region-select">Region</label>
+                <select id="region-select">
+                    <option value="us-east-1">US East (N. Virginia)</option>
+                    <option value="us-east-2">US East (Ohio)</option>
+                    <option value="us-west-1">US West (N. California)</option>
+                    <option value="us-west-2">US West (Oregon)</option>
+                    <option value="eu-west-1">EU (Ireland)</option>
+                    <option value="eu-central-1">EU (Frankfurt)</option>
+                    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+                    <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="engine-select">Database Engine</label>
+                <select id="engine-select">
+                    <option value="mysql">MySQL</option>
+                    <option value="postgresql">PostgreSQL</option>
+                    <option value="mariadb">MariaDB</option>
+                    <option value="sqlserver">SQL Server</option>
+                    <option value="oracle">Oracle</option>
+                    <option value="aurora">Aurora</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="deployment-option">Deployment Option</label>
+                <select id="deployment-option">
+                    <option value="single-az">Single AZ</option>
+                    <option value="multi-az">Multi-AZ</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="storage-type">Storage Type</label>
+                <select id="storage-type">
+                    <option value="gp2">General Purpose SSD (gp2)</option>
+                    <option value="io1">Provisioned IOPS SSD (io1)</option>
+                    <option value="standard">Magnetic</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="instance-class">Instance Class</label>
+                <select id="instance-class">
+                    <option value="all">All Classes</option>
+                    <option value="db.t3">T3 (Burstable)</option>
+                    <option value="db.m5">M5 (General Purpose)</option>
+                    <option value="db.r5">R5 (Memory Optimized)</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button id="apply-filters" class="button">Apply Filters</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="instance-comparison">Instance Comparison</div>
+            <div class="tab" data-tab="engine-comparison">Engine Comparison</div>
+            <div class="tab" data-tab="storage-analysis">Storage Analysis</div>
+        </div>
+        
+        <div class="result-section">
+            <div id="instance-comparison" class="tab-content active">
+                <h2>RDS Instance Price Comparison</h2>
+                <p>Compare hourly prices for different RDS instance types:</p>
+                
+                <div class="charts-container">
+                    <div class="chart-container" id="instance-price-chart">
+                        <p>Loading price chart...</p>
+                    </div>
+                </div>
+                
+                <table id="instance-price-table">
+                    <thead>
+                        <tr>
+                            <th>Instance Class</th>
+                            <th>vCPUs</th>
+                            <th>Memory (GB)</th>
+                            <th>Network Performance</th>
+                            <th>Price per Hour</th>
+                            <th>Price per vCPU</th>
+                            <th>Price per GB</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7">Loading pricing data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="engine-comparison" class="tab-content">
+                <h2>Database Engine Price Comparison</h2>
+                <p>Compare costs across different database engines:</p>
+                
+                <div class="filter-group" style="max-width: 300px; margin-bottom: 20px;">
+                    <label for="comparison-instance">Instance Class</label>
+                    <select id="comparison-instance">
+                        <option value="db.t3.medium">db.t3.medium</option>
+                        <option value="db.m5.large">db.m5.large</option>
+                        <option value="db.r5.large">db.r5.large</option>
+                    </select>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-container" id="engine-comparison-chart">
+                        <p>Loading engine comparison chart...</p>
+                    </div>
+                </div>
+                
+                <table id="engine-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Database Engine</th>
+                            <th>License Model</th>
+                            <th>Single-AZ Price</th>
+                            <th>Multi-AZ Price</th>
+                            <th>Price Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5">Select an instance class to compare engines...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="storage-analysis" class="tab-content">
+                <h2>Storage Cost Analysis</h2>
+                <p>Analyze storage costs for different types and sizes:</p>
+                
+                <div class="filter-group" style="max-width: 300px; margin-bottom: 20px;">
+                    <label for="storage-size">Storage Size (GB)</label>
+                    <input type="number" id="storage-size" min="20" value="100">
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-container" id="storage-cost-chart">
+                        <p>Loading storage cost chart...</p>
+                    </div>
+                </div>
+                
+                <table id="storage-cost-table">
+                    <thead>
+                        <tr>
+                            <th>Storage Type</th>
+                            <th>Size (GB)</th>
+                            <th>Price per GB/month</th>
+                            <th>Total Monthly Cost</th>
+                            <th>IOPS</th>
+                            <th>Features</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6">Enter storage size to see costs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>AWS Cost Explorer MCP Server - Powered by CloudPrice.net</p>
+    </footer>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Activate the clicked tab
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Mock function to load RDS instance pricing data
+        function loadRDSInstanceData() {
+            const region = document.getElementById('region-select').value;
+            const engine = document.getElementById('engine-select').value;
+            const deployment = document.getElementById('deployment-option').value;
+            const instanceClass = document.getElementById('instance-class').value;
+            
+            // Example API call format
+            fetch(`/api/cloudprice/rds/instances?region=${region}&engine=${engine}&deployment=${deployment}&instance_class=${instanceClass}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update instance price comparison table
+                    const tableBody = document.querySelector('#instance-price-table tbody');
+                    let tableHtml = '';
+                    
+                    if (data && data.instances && data.instances.length > 0) {
+                        for (const instance of data.instances) {
+                            tableHtml += `<tr>
+                                <td>${instance.instance_class}</td>
+                                <td>${instance.vcpus}</td>
+                                <td>${instance.memory_gb}</td>
+                                <td>${instance.network_performance}</td>
+                                <td class="price-highlight">$${instance.price_per_hour}</td>
+                                <td>$${(instance.price_per_hour / instance.vcpus).toFixed(4)}</td>
+                                <td>$${(instance.price_per_hour / instance.memory_gb).toFixed(4)}</td>
+                            </tr>`;
+                        }
+                    } else {
+                        tableHtml = '<tr><td colspan="7">No instances match your criteria</td></tr>';
+                    }
+                    
+                    tableBody.innerHTML = tableHtml;
+                    
+                    // Update instance price chart
+                    if (data && data.chart) {
+                        document.getElementById('instance-price-chart').innerHTML = `<img src="data:image/png;base64,${data.chart}" alt="RDS Instance Price Comparison">`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching RDS instance data:', error);
+                    document.querySelector('#instance-price-table tbody').innerHTML = 
+                        '<tr><td colspan="7">Error loading pricing data. Please try again later.</td></tr>';
+                });
+        }
+        
+        // Load engine comparison data
+        function loadEngineComparisonData() {
+            const region = document.getElementById('region-select').value;
+            const instanceClass = document.getElementById('comparison-instance').value;
+            
+            // Example API call
+            fetch(`/api/cloudprice/rds/engine-comparison?region=${region}&instance_class=${instanceClass}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update engine comparison table
+                    const tableBody = document.querySelector('#engine-comparison-table tbody');
+                    let tableHtml = '';
+                    
+                    if (data && data.engines && data.engines.length > 0) {
+                        for (const engine of data.engines) {
+                            const priceDiff = ((engine.multi_az_price / engine.single_az_price) - 1) * 100;
+                            
+                            tableHtml += `<tr>
+                                <td>${engine.engine}</td>
+                                <td>${engine.license_model}</td>
+                                <td class="price-highlight">$${engine.single_az_price}/hr</td>
+                                <td>$${engine.multi_az_price}/hr</td>
+                                <td>${priceDiff.toFixed(1)}%</td>
+                            </tr>`;
+                        }
+                    } else {
+                        tableHtml = '<tr><td colspan="5">No data available for selected instance class</td></tr>';
+                    }
+                    
+                    tableBody.innerHTML = tableHtml;
+                    
+                    // Update engine comparison chart
+                    if (data && data.chart) {
+                        document.getElementById('engine-comparison-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.chart}" alt="Database Engine Comparison">`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching engine comparison data:', error);
+                });
+        }
+        
+        // Load storage cost data
+        function loadStorageCostData() {
+            const region = document.getElementById('region-select').value;
+            const storageSize = document.getElementById('storage-size').value;
+            
+            // Example API call
+            fetch(`/api/cloudprice/rds/storage-costs?region=${region}&size=${storageSize}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update storage cost table
+                    const tableBody = document.querySelector('#storage-cost-table tbody');
+                    let tableHtml = '';
+                    
+                    if (data && data.storage_types && data.storage_types.length > 0) {
+                        for (const storage of data.storage_types) {
+                            tableHtml += `<tr>
+                                <td>${storage.type}</td>
+                                <td>${storage.size}</td>
+                                <td>$${storage.price_per_gb}/month</td>
+                                <td class="price-highlight">$${storage.monthly_cost}/month</td>
+                                <td>${storage.iops}</td>
+                                <td>${storage.features}</td>
+                            </tr>`;
+                        }
+                    } else {
+                        tableHtml = '<tr><td colspan="6">No storage cost data available</td></tr>';
+                    }
+                    
+                    tableBody.innerHTML = tableHtml;
+                    
+                    // Update storage cost chart
+                    if (data && data.chart) {
+                        document.getElementById('storage-cost-chart').innerHTML = 
+                            `<img src="data:image/png;base64,${data.chart}" alt="Storage Cost Analysis">`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching storage cost data:', error);
+                });
+        }
+        
+        // Event listeners
+        document.getElementById('apply-filters').addEventListener('click', loadRDSInstanceData);
+        document.getElementById('comparison-instance').addEventListener('change', loadEngineComparisonData);
+        document.getElementById('storage-size').addEventListener('change', loadStorageCostData);
+        document.getElementById('storage-size').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                loadStorageCostData();
+            }
+        });
+        
+        // Initial data load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRDSInstanceData();
+            loadEngineComparisonData();
+            loadStorageCostData();
+        });
+    </script>
+</body>
+</html> 

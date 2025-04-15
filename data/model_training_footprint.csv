@@ -1,0 +1,14 @@
+model_id,total_emissions_gco2e,expected_inferences
+anthropic.claude-3-opus-20240229-v1:0,1250000000,10000000000
+anthropic.claude-3-sonnet-20240229-v1:0,500000000,15000000000
+anthropic.claude-3-haiku-20240307-v1:0,175000000,20000000000
+anthropic.claude-2.1,400000000,8000000000
+anthropic.claude-2.0,375000000,7500000000
+anthropic.claude-instant-1.2,120000000,12000000000
+amazon.titan-text-express-v1:0,180000000,15000000000
+amazon.titan-text-lite-v1:0,70000000,20000000000
+amazon.titan-embed-text-v1:0,40000000,25000000000
+meta.llama3-70b-instruct-v1:0,300000000,12000000000
+meta.llama3-8b-instruct-v1:0,80000000,15000000000
+stability.stable-diffusion-xl-v1:0,120000000,5000000000
+stability.stable-diffusion-3-v1:0,150000000,6000000000 
